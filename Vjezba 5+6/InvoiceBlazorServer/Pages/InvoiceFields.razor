@@ -1,0 +1,65 @@
+﻿@using Domain.Models
+@using Radzen.Blazor
+<h3>Invoice Fields</h3>
+
+<div class="invoiceFields">
+    <label for="payerName">Payer Name</label>
+    <InputText id="payerName" class="form-control" @bind-Value="@Invoice.PayerName"></InputText>
+
+    <label for="payerAdress">Payer Adress</label>
+    <InputText id="payerAdress" class="form-control" @bind-Value="@Invoice.PayerAdress"></InputText>
+
+    <label for="payerIBAN">Payer IBAN</label>
+    <InputText id="payerIBAN" class="form-control" @bind-Value="@Invoice.PayerIBAN"></InputText>
+
+    <label for="payerNumber">Payer Number</label>
+    <InputText id="payerNumber" class="form-control" @bind-Value="@Invoice.PayerNumber"></InputText>
+
+    <label for="recieverName">Reciever Name</label>
+    <InputText id="recieverName" class="form-control" @bind-Value="@Invoice.RecieverName"></InputText>
+
+    <label for="recieverAdress">Reciever Adress</label>
+    <InputText id="recieverAdress" class="form-control" @bind-Value="@Invoice.RecieverAdress"></InputText>
+
+    <label for="recieverNumber">Reciever Number</label>
+    <InputText id="recieverNumber" class="form-control" @bind-Value="@Invoice.RecieverNumber"></InputText>
+
+    <label for="emergency">Emergency</label>
+    <InputCheckbox id="emergency" class="form-control" @bind-Value="@Invoice.Emergency"></InputCheckbox>
+
+    <label for="amount">Amount</label>
+    <InputText id="amount" class="form-control" @bind-Value="@Invoice.Amount"></InputText>
+
+    <label for="description">Description</label>
+    <InputText id="description" class="form-control" @bind-Value="@Invoice.Description"></InputText>
+
+    <label>Models</label>
+    <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" 
+                            Data="@Models"
+                            Change=@(args => OnChangeModels(args, "DropDown")) />
+
+    <label>Currency</label>
+
+    <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" 
+                            Data="@Currency"
+                            Change=@(args => OnChangeCurrency(args, "DropDown")) />
+    
+</div>
+
+@code {
+    [Parameter]
+    public Invoice Invoice{ get; set; }
+
+    IEnumerable<string> Models =  new string[] { "00", "01","02" };
+    IEnumerable<string> Currency =  new string[] { "KN", "USD","EUR", "CZK" };
+
+    void OnChangeModels(object value, string name)
+    {
+        Invoice.Model =(string) (value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value);
+    }
+
+    void OnChangeCurrency(object value, string name)
+    {
+        Invoice.Currency =(string) (value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value);
+    }
+}

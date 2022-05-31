@@ -1,0 +1,49 @@
+﻿@page "/EditInvoice/{InvoiceId}"
+@using Domain.Models
+@using InvoiceBlazorServer.Services
+@inject NavigationManager _navigationManager;
+@inject InvoiceService _invoiceService;
+
+<h3>Edit Invoice</h3>
+
+@if(Invoice == null)
+{
+    <div>Loading........</div>
+}
+else
+{
+    <EditForm Model="@Invoice" OnValidSubmit="@UpdateInvoiceAsync">
+        <InvoiceFields Invoice="@Invoice"></InvoiceFields>
+        <label for="date">Date</label>
+        <InputText id="date" class="form-control" @bind-Value="@Invoice.Date"></InputText>
+        <button type="submit">
+            <span class="oi-pencil"></span>
+                Update Invoice
+        </button>
+        <button type="button" @onclick="Close">
+            <span class="oi oi-media-skip-backward"></span>
+                Close
+        </button>
+    </EditForm>
+}
+@code {
+    [Parameter]
+    public string InvoiceId { get; set; }
+
+    public Invoice Invoice { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Invoice = await _invoiceService.GetInvoiceAsync(int.Parse(InvoiceId));
+    }
+    private async Task UpdateInvoiceAsync()
+    {
+        await _invoiceService.UpdateInvoiceAsync(Invoice);
+        Close();
+    }
+    private void Close()
+    {
+        _navigationManager.NavigateTo("/");
+    }
+
+}

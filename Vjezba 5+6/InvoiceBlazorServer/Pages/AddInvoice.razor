@@ -1,0 +1,40 @@
+﻿@page "/AddInvoice"
+@using Domain.Models
+@using InvoiceBlazorServer.Services
+@inject NavigationManager _navigationManager;
+@inject InvoiceService _invoiceService;
+<h3>Add Invoice</h3>
+
+<EditForm Model="@Invoice" OnValidSubmit="@AddInvoiceAsync">
+    <InvoiceFields Invoice="@Invoice"></InvoiceFields>
+    <button type="submit" class="btn btn-primary">
+        <span class="oi-pencil"></span>
+            Add Invoice
+    </button>
+    <button type="button" @onclick="Close">
+        <span class="oi oi-media-skip-backward"></span>
+            Close
+    </button>
+
+</EditForm>
+
+
+@code {
+    public Invoice Invoice { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        Invoice = new Invoice();
+        Invoice.Date = DateTime.Now.ToShortDateString();
+    }
+
+    private void Close()
+    {
+        _navigationManager.NavigateTo("/");
+    }
+
+    private async Task AddInvoiceAsync()
+    {
+        await _invoiceService.AddInvoiceAsync(Invoice);
+        Close();
+    }
+}

@@ -1,0 +1,15 @@
+﻿<Window x:Class="WPF_API.DisplayInvoice"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPF_API"
+        mc:Ignorable="d"
+        Title="DisplayInvoice" Height="450" Width="800">
+    <Grid>
+        <Button x:Name="Ispis" Content="Ispis" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="26" Width="107" Click="Ispis_Click"/>
+        <TextBox x:Name="InvoiceID" HorizontalAlignment="Left" Margin="136,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="Display" HorizontalAlignment="Center" Margin="0,67,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="780" Height="357"/>
+
+    </Grid>
+</Window>

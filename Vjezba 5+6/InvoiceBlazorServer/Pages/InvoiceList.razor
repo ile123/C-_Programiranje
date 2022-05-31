@@ -1,0 +1,174 @@
+﻿@page "/"
+@using Domain.Models
+@using InvoiceBlazorServer.Services
+@inject InvoiceService _invoiceService;
+@inject NavigationManager _navigationManager;
+
+<h3>Invoice List</h3>
+<!--
+<div>
+    <button onclick="async () => await InvoiceSorting("PayerName"))" height="24" width="24">Payer Name</button>
+    <button onclick="async () => await InvoiceSorting("RecieverName"))" height="24" width="24">Reciever Name</button>
+    <button onclick="async () => await InvoiceSorting("Amount"))" height="24" width="24">Amount</button>
+    <button onclick="async () => await InvoiceSorting("Date"))" height="24" width="24">Date</button>
+</div>
+-->
+<select @bind="SelectedSort">
+    <option value="ID">Default</option>
+    <option value="PayerName">Payer Name</option>
+    <option value="RecieverName">Receiever Name</option>
+    <option value="Amount">Amount</option>
+    <option value="Date">Date</option>
+</select>
+@if(Invoices == null)
+{
+    <div>Loading........</div>
+}
+else
+{
+    <div class="form-group">
+        <input class="form-control" type="text" placeholder="Filter......" @bind="Filter" @bind:event="oninput">
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th width="120px">Payer Name</th>
+                <th width="120px">Payer Adress</th>
+                <th width="120px">Payer IBAN</th>
+                <th width="120px">Payer Number</th>
+                <th width="120px">Reciever Name</th>
+                <th width="120px">Reciever Adress</th>
+                <th width="120px">Reciever Number</th>
+                <th width="120px">Emergency</th>
+                <th width="120px">Amount</th>
+                <th width="120px">Date</th>
+                <th width="120px">Description</th>
+                <th width="120px">Model</th>
+                <th width="120px">Currency</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var invoice in Invoices)
+            {
+                if (!IsVisible(invoice))
+                {
+                    continue;
+                }
+                <tr>
+                    <td width="120px">@invoice.PayerName</td>
+                    <td width="120px">@invoice.PayerAdress</td>
+                    <td width="120px">@invoice.PayerIBAN</td>
+                    <td width="120px">@invoice.PayerNumber</td>
+                    <td width="120px">@invoice.RecieverName</td>
+                    <td width="120px">@invoice.RecieverAdress</td>
+                    <td width="120px">@invoice.RecieverNumber</td>
+                    <td width="120px">@invoice.Emergency.ToString()</td>
+                    <td width="120px">@invoice.Amount</td>
+                    <td width="120px">@invoice.Date</td>
+                    <td width="120px">@invoice.Description</td>
+                    <td width="120px">@invoice.Model</td>
+                    <td width="120px">@invoice.Currency</td>
+                    <td> <a href="/EditInvoice/@invoice.ID" class="btn btn-primary"> <span class="oi oi-pencil"></span> </a></td>
+                    <td><button type="button" @onclick="() => DeleteInvoiceAsync(invoice.ID)"> <span class="oi oi-delete"></span> </button> </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="button" @onclick="OpenAddInvoicePage">
+        <span class="oi oi-plus"></span>
+            Add Invoice
+    </button>
+
+}
+
+@code {
+    private IEnumerable<Invoice> Invoices{ get; set; }
+    private string selectedSort { get; set; }
+    public string Filter { get; set; }
+    public string SelectedSort
+    {
+        get{ return selectedSort; }
+        set
+        {
+            selectedSort = value;
+            selecteSortDictionary[selectedSort]();
+
+        }
+
+    }
+    Dictionary<string, Action> selecteSortDictionary;
+    protected override async Task OnInitializedAsync()
+    {
+        Invoices = await _invoiceService.GetInvoices();
+        Filter = string.Empty;
+        selecteSortDictionary = new Dictionary<string, Action>
+        {
+             ["ID"] = () => Invoices = Invoices.OrderBy(x => x.ID),
+             ["PayerName"] = () => Invoices = Invoices.OrderBy(x => x.PayerName),
+             ["RecieverName"] = () => Invoices = Invoices.OrderBy(x => x.RecieverName),
+             ["Amount"] = () => Invoices = Invoices.OrderBy(x => x.Amount),
+             ["Date"] = () => Invoices = Invoices.OrderBy(x => x.Date),
+        };
+    }
+    private void OpenAddInvoicePage()
+    {
+        _navigationManager.NavigateTo("/AddInvoice");
+    }
+    private async Task DeleteInvoiceAsync(int invoiceId)
+    {
+        await _invoiceService.DeleteInvoiceAsync(invoiceId);
+        Invoices = await _invoiceService.GetInvoices();
+    }
+    public bool IsVisible(Invoice invoice)
+    {
+        if (string.IsNullOrEmpty(invoice.PayerName))
+        {
+            return true;
+        }
+        if (invoice.PayerName.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        if (invoice.PayerName.StartsWith(Filter))
+        {
+            return true;
+        }
+        if (string.IsNullOrEmpty(invoice.RecieverName))
+        {
+            return true;
+        }
+        if (invoice.RecieverName.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        if (invoice.RecieverName.StartsWith(Filter))
+        {
+            return true;
+        }
+        if (string.IsNullOrEmpty(invoice.Amount))
+        {
+            return true;
+        }
+        if (invoice.Amount.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        if (invoice.Amount.StartsWith(Filter))
+        {
+            return true;
+        }
+        if (string.IsNullOrEmpty(invoice.Date))
+        {
+            return true;
+        }
+        if (invoice.Date.Contains(Filter, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        if (invoice.Date.StartsWith(Filter))
+        {
+            return true;
+        }
+        return false;
+    }
+}
